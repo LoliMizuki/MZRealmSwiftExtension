@@ -11,7 +11,8 @@ import RealmSwift
 
 
 #if swift(>=5.2) // 暫時對策 for old and new developing env
-protocol RealmDataActionsProtocol: AnyObject, RealmCollectionValue {
+
+public protocol MZRealmDataActionsProtocol: AnyObject, RealmCollectionValue {
     
     static var realm: Realm { get }
     
@@ -34,8 +35,10 @@ protocol RealmDataActionsProtocol: AnyObject, RealmCollectionValue {
     
     func beforeSaving() -> Error?
 }
+
 #else
-protocol RealmDataActionsProtocol: class, RealmCollectionValue {
+
+public protocol MZRealmDataActionsProtocol: class, RealmCollectionValue {
     
     static func fetch(includeDeleted: Bool) -> [Self]
     static func count() -> Int
@@ -56,14 +59,15 @@ protocol RealmDataActionsProtocol: class, RealmCollectionValue {
     
     func beforeSaving() -> Error?
 }
+
 #endif
 
 
-extension RealmDataActionsProtocol where Self: Object { // Object is Realm.Object
+extension MZRealmDataActionsProtocol where Self: Object { // Object is Realm.Object
     
-    static func count() -> Int { fetch().count }
+    public static func count() -> Int { fetch().count }
 
-    static func fetch(includeDeleted: Bool = false) -> [Self] {
+    public static func fetch(includeDeleted: Bool = false) -> [Self] {
         guard Thread.current.isMainThread else { fatalError("Only work on main thread") }
         
         return realm.objects(self.self)
@@ -71,7 +75,7 @@ extension RealmDataActionsProtocol where Self: Object { // Object is Realm.Objec
             .map { $0 }
     }
     
-    static func deleteAll() -> Error? {
+    public static func deleteAll() -> Error? {
         let all = self.fetch()
         
         var error: Error? = nil
@@ -84,7 +88,7 @@ extension RealmDataActionsProtocol where Self: Object { // Object is Realm.Objec
         return error
     }
     
-    static func removeAllDeletedData() -> Int {
+    public static func removeAllDeletedData() -> Int {
         let willDeleting = fetch(includeDeleted: true).filter { $0.isDeleted }
         
         let willDeletigCount = willDeleting.count
@@ -94,16 +98,16 @@ extension RealmDataActionsProtocol where Self: Object { // Object is Realm.Objec
         return willDeletigCount
     }
     
-    static func printAll() {
+    public static func printAll() {
         Self.fetch().forEach { print($0) }
     }
     
-    var isSaved: Bool { self.realm != nil }
-    var updatedAt: Date { get { Date() } set { } }
+    public var isSaved: Bool { self.realm != nil }
+    public var updatedAt: Date { get { Date() } set { } }
     
-    func beforeSaving() -> Error? { nil }
+    public func beforeSaving() -> Error? { nil }
     
-    func save(ignoreUpdatedAt: Bool = false, modifier: ((Self) -> ())? = nil) -> Error? {
+    public func save(ignoreUpdatedAt: Bool = false, modifier: ((Self) -> ())? = nil) -> Error? {
         let realm = Self.realm
         
         func doSave() -> Error? {
@@ -134,11 +138,11 @@ extension RealmDataActionsProtocol where Self: Object { // Object is Realm.Objec
         }
     }
     
-    func softDelete() -> Error? {
+    public func softDelete() -> Error? {
         save { $0.isDeleted = true }
     }
     
-    func delete() -> Error? {
+    public func delete() -> Error? {
         do {
             try Self.realm.write {
                 Self.realm.delete(self)
