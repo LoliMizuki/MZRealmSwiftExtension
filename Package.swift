@@ -7,6 +7,8 @@ let package = Package(
     
     name: "MZRealmSwiftExtension",
     
+    platforms: [.iOS(.v11)],
+    
     products: [
         .library(
             name: "MZRealmSwiftExtension",
