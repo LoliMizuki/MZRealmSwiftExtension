@@ -1,5 +1,5 @@
 //
-//  DataEntitiesExtensions.swift
+//  MZRealmSwiftObjectExtension.swift
 //
 //  Created by Inaba Mizuki on 2020/11/17.
 //  Copyright © 2020 mizukiclub. All rights reserved.
@@ -7,7 +7,6 @@
 
 import Foundation
 import RealmSwift
-//import MZSwifts
 
 
 #if swift(>=5.2) // 暫時對策 for old and new developing env
